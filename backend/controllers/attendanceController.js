@@ -41,4 +41,46 @@ const closeAbsent = async (req, res) =>{
     }
 }
 
-export default {openAbsent, closeAbsent}
+const createAttendance = async (req, res) => {
+    try{
+      const { student_id, class_id } = req.body;
+
+      const sessionResult = await pool.query(
+        `SELECT id FROM attendance_sessions
+         WHERE class_id = $1 AND status = 'open'
+         LIMIT 1`,
+        [class_id]
+      );
+      console.log(sessionResult.rows[0])
+  
+      if (sessionResult.rows.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "Absensi tidak dibuka"
+        });
+      }
+  
+      const session_id = sessionResult.rows[0].id;
+    //   console.log(session_id)
+  
+      await pool.query(
+        `INSERT INTO attendances (student_id, class_id, session_id)
+         VALUES ($1, $2, $3)`,
+        [student_id, class_id, session_id]
+      );
+  
+      res.status(201).json({
+        success: true,
+        message: "Berhasil absen"
+      });
+
+    }catch(error){
+    console.error(error);
+    res.status(500).json({
+    success: false,
+    message: "Gagal absen"
+    });
+    }
+}
+
+export default {openAbsent, closeAbsent, createAttendance}
