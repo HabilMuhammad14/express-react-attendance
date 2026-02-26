@@ -1,8 +1,11 @@
 import './css/DashboardMahasiswa.css'
+import {useParams} from 'react-router-dom';
 import React from 'react'
 
 const DashboardMahasiswa = () =>{
   const [classes, setClasses] = React.useState([])
+  const {student_id} = useParams()
+  
   React.useEffect(() => {
     const fetchClasses = async () => {
       try{
@@ -18,6 +21,19 @@ const DashboardMahasiswa = () =>{
     }
     fetchClasses()
   }, [])
+
+  const handleInputAbsent = async (e) => {
+    await fetch(`http://localhost:5000/attendance/attend`, {
+      method: 'POST', 
+      headers: {
+        'Content-type' : 'application/json'
+      }, 
+      body: JSON.stringify({
+        student_id: student_id,
+        class_id: e.target.id,
+      })
+    })
+  }
 
     return(
       <>
@@ -41,7 +57,7 @@ const DashboardMahasiswa = () =>{
               {cls.status === 'open' ?
               <>
               <p><span className="open">Absensi Dibuka</span></p>
-              <button className="btn-primary">Absen Sekarang</button>
+              <button className="btn-primary" id={cls.id} onClick={handleInputAbsent}>Absen Sekarang</button>
               </>
              : 
              <>
