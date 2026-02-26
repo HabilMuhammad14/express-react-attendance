@@ -26,7 +26,7 @@ const Login = () => {
       if(data.role === 'dosen'){
         navigate(`/dashboard-dosen/${data.id}`)
       }else if(data.role === 'mahasiswa'){
-        navigate('/dashboard-mahasiswa')
+        navigate(`/dashboard-mahasiswa/${data.id}`)
       }
       
     }catch(err){
